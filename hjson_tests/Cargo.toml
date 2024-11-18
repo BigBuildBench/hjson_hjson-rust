@@ -1,0 +1,11 @@
+[package]
+name = "serde-hjson-tests"
+version = "1.1.0"
+authors = ["Christian Zangl <laktak@cdak.net>"]
+edition = "2021"
+
+[dependencies]
+
+[[test]]
+name = "test"
+path = "tests/test_hjson.rs"

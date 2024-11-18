@@ -1,0 +1,18 @@
+[package]
+name = "serde-hjson"
+version = "1.1.0"
+authors = ["Christian Zangl <laktak@cdak.net>"]
+license = "MIT"
+description = "Hjson serialization file format"
+repository = "https://github.com/hjson/hjson-rust"
+#documentation = "https://hjson.github.io/hjson-rust/"
+readme = "../README.md"
+keywords = ["hjson", "json", "serde", "serialization"]
+edition = "2021"
+rust-version = "1.65" # MSRV
+
+[features]
+preserve_order = ["linked-hash-map", "linked-hash-map/serde_impl"]
+default = ["preserve_order"]
+
+[dependencies]

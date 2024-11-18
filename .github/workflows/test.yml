@@ -1,0 +1,58 @@
+name: test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+      - name: format check
+        run: cargo fmt --check --all
+      - name: clippy check
+        run: cargo clippy --workspace
+
+  test:
+    name: ${{ matrix.os }} / Rust ${{ matrix.rust }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        rust: [stable]
+        include:
+          - os: ubuntu-latest
+            rust: 1.65.0 # MSRV
+          - os: ubuntu-latest
+            rust: beta
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+      - run: cd hjson && cargo build --release
+      - if: matrix.rust != '1.65.0'
+        run: |
+          cd hjson_cli &&
+          cargo build --release &&
+          diff ../hjson_tests/assets/trail_result.hjson <(../target/release/hjson ../hjson_tests/assets/trail_result.json) &&
+          diff ../hjson_tests/assets/trail_result.json <(../target/release/hjson -j ../hjson_tests/assets/trail_test.hjson) &&
+          diff ../hjson_tests/assets/simplenumber_result.json <(../target/release/hjson -c ../hjson_tests/assets/simplenumber_test.hjson)
+      - run: |
+          if [ '${{ matrix.rust }}' == '1.65.0' ]; then
+            # because of 'clap_derive' it needs Rust 1.74+
+            cargo test --workspace --exclude hjson -- --nocapture
+          else
+            cargo test --workspace -- --nocapture
+          fi
+      - run: cd hjson && cargo doc

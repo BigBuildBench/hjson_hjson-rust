@@ -1,0 +1,14 @@
+[package]
+name = "hjson"
+version = "1.1.0"
+authors = ["Christian Zangl <laktak@cdak.net>"]
+license = "MIT"
+description = "Hjson serialization file format"
+repository = "https://github.com/hjson/hjson-rust"
+keywords = ["hjson", "json", "serde", "serialization"]
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "hjson"
